@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import MyStack from './routes/MyStack';
+import { useFonts } from 'expo-font';
+import { RecoilRoot } from 'recoil';
+
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    'Gilroy-Bold': require('./assets/fonts/Gilroy-Bold.ttf'),
+    'Gilroy-ExtraBold': require('./assets/fonts/Gilroy-ExtraBold.ttf'),
+    'Gilroy-Light': require('./assets/fonts/Gilroy-Light.ttf'),
+    'Gilroy-Medium': require('./assets/fonts/Gilroy-Medium.ttf'),
+    'Gilroy-SemiBold': require('./assets/fonts/Gilroy-SemiBold.ttf'),
+  });
+  if (!fontsLoaded) {
+    return null;
+  }
+
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <RecoilRoot>
+      <NavigationContainer>
+        <MyStack/>
+      </NavigationContainer>
+     </RecoilRoot>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
