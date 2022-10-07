@@ -3,48 +3,102 @@ import { useEffect, useState } from "react";
 import { Dimensions, Image, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useRecoilValue } from "recoil";
 import { LinearGradient } from 'expo-linear-gradient';
-import { nameInput, dateInput, photoInput } from "../atoms";
-import io from 'socket.io-client'
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { userData } from "../DummyData";
+import { nameInput, passwordInput } from "../atoms";
+import { database, auth} from "../firebase";
+import {createUserWithEmailAndPassword} from 'firebase/auth'
+import { child, get, ref, onValue, set } from "firebase/database";
 
-    export const socket = io('http://192.168.1.31:3000')
+
+
+    
 
 export default function Users(){
-    const [users, setUsers] = useState(null)
+    const [users, setUsers] = useState([])
     const [visible, setVisible] = useState(false)
     const [modalData, setModalData] = useState('')
-    
-    const name = useRecoilValue(nameInput);
-    const date = useRecoilValue(dateInput);
-    const photo = useRecoilValue(photoInput);
-    
-   
-    const cardGap = 20;
-    const cardWidth = (Dimensions.get('window').width - cardGap * 3) / 2;
-    
-    const getData = async () => {     
-        let dummy =  await AsyncStorage.getItem('dummy-data')
-        const dummyData = JSON.parse(dummy)
-        if(dummyData !== null){
-            setUsers(dummyData) 
+    const [currentUserValues, setCurrentUserValues] = useState([])
+    const name = useRecoilValue(nameInput)
+    const password = useRecoilValue(passwordInput)
+
+
+    let currentUser = auth.currentUser
+    let currentUseremail
+    let slicedUserEmail
+    let finalUserEmail //bu like alan usera eklemek için kullanılacak user ismi
+        if (currentUser != null) {
+            currentUseremail = currentUser.email;
+            slicedUserEmail = currentUseremail.split('@gmail.com')
+            finalUserEmail = slicedUserEmail[0]
         }
-      }
-    useEffect(()=>{      
-        getData()
-    },[])
+      
+    
+
+    async function Value(){
+        const rootRef = ref(database)
+        get(child(rootRef, 'dummyData/')).then((snapshot) => {
+            if (snapshot.exists()) {
+                let usersArray = []
+                snapshot.forEach(user =>{
+                    usersArray.push(user.val())
+                })
+                
+              setUsers(usersArray)
+            } else {
+              console.log("No data available");
+            }
+          }).catch((error) => {
+            console.error(error);
+          });
 
 
-    const handleLike = () =>{
-        socket.emit('sendLike', {
-            senderName: name,
-            senderDate: date,
-            senderPhoto: photo,
+          //get currentuserData
+        
+        get(child(rootRef, `dummyData/${finalUserEmail}`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                
+                let currUserDataArray = []
+               // snapshot.forEach(user =>{
+                let json = snapshot.val()
+                
+                    currUserDataArray.push(json)
+               // })
+                setCurrentUserValues(currUserDataArray)
+                console.log(currUserDataArray[0].date)
+            }
         })
-        console.log('liked')
-        setVisible(false)
+
+
+    }
+    useEffect(()=>{
+        Value()
+        
+
+    },[])
+    
+    const cardGap = 20
+    const cardWidth = (Dimensions.get('window').width - cardGap * 3) / 2
+
+    const sendlikeToLikesPage =  () => {
+        let currModalName = modalData.toLowerCase()
+          set(ref(database, `dummyData/${currModalName}/likes`),{
+            likedName: currentUserValues[0]?.name,
+            likedDate: currentUserValues[0]?.date,
+            likedPhoto: currentUserValues[0]?.photo
+        })
+    }
+    
+    const handleLike =  () =>{
+          sendlikeToLikesPage()
+          setVisible(false)    
     }
 
+    const openModal = (user) => {
+        const email = '@gmail.com'
+        let endEmail = name.concat(email)
+        createUserWithEmailAndPassword(auth,endEmail, password)
+        setModalData(user.name)
+        setVisible(true)
+    }
 
     return(
         <SafeAreaView>
@@ -67,24 +121,14 @@ export default function Users(){
         </Modal>
         {users?.map((user, i) =>{
             return (
-                <TouchableOpacity key={user.name} style={{marginTop: 10, marginLeft: i % 2 !== 0 ? cardGap : 0, width: cardWidth, height: 180, borderRadius: 10, justifyContent: 'center', alignItems: 'center',}} onPress={() => {
-                    setModalData(user.name)
-                    setVisible(true)}}>   
+                <TouchableOpacity key={user.name} style={{marginTop: 10, marginLeft: i % 2 !== 0 ? cardGap : 0, width: cardWidth, height: 180, borderRadius: 10, justifyContent: 'center', alignItems: 'center',}} onPress={() => openModal(user)}>   
                     <LinearGradient locations={[0, 1]} colors={['#844AFF','transparent']} style={{position:'absolute', borderRadius:10, width: cardWidth, height:180, zIndex:3, opacity:0.7}} start={{ x: 0.1, y: 1.7}} end={{x: 0.1, y: 0.1}} />
-                    <Image source={user.photo} style={{width: cardWidth, height:180, borderRadius: 10, position:'absolute', opacity:1}}/>
+                    <Image source={{uri: user.photo}} style={{width: cardWidth, height:180, borderRadius: 10, position:'absolute', opacity:1}}/>
                     <Text style={{fontFamily:'Gilroy-Bold', fontSize: 16, color: '#FFFFFF', textAlign:'center', position:'absolute',left:10, bottom:20}}>{user.name}</Text>
                     <Text style={{fontFamily:'Gilroy-Bold', fontSize: 10, color: '#FFFFFF', textAlign:'center', position:'absolute',left:10, bottom:8}}>{user.date}</Text>    
                 </TouchableOpacity>
             )
         })}
-             <TouchableOpacity key={name} style={{marginTop: 10, marginLeft: 1 % 2 !== 0 ? cardGap : 0, width: cardWidth, height: 180, borderRadius: 10, justifyContent: 'center', alignItems: 'center',}} onPress={() => {
-                    setModalData(name)
-                    setVisible(true)}}>              
-             <LinearGradient locations={[0, 1]} colors={['#844AFF','transparent']} style={{position:'absolute', borderRadius:10, width: cardWidth, height:180, zIndex:3, opacity:0.7}} start={{ x: 0.1, y: 1.7}} end={{x: 0.1, y: 0.1}} />
-            <Image source={{ uri: photo}} style={{width: cardWidth, height:180, borderRadius: 10, position:'absolute', opacity:1}}/>
-            <Text style={{fontFamily:'Gilroy-Bold', fontSize: 16, color: '#FFFFFF', textAlign:'center', position:'absolute',left:10, bottom:20}}>{name}</Text>
-            <Text style={{fontFamily:'Gilroy-Bold', fontSize: 10, color: '#FFFFFF', textAlign:'center', position:'absolute',left:10, bottom:8}}>{date}</Text>
-             </TouchableOpacity>
     </View>
     </SafeAreaView>
     )

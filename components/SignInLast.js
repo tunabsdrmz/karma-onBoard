@@ -1,26 +1,45 @@
 import { Image, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import Checkbox from 'expo-checkbox';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CardsImg from '../assets/CardsImg.png'
 import { StatusBar } from "expo-status-bar";
 import { ProgressBar, Colors} from "react-native-paper";
-import { useRecoilState } from "recoil";
-import { passwordInput } from "../atoms";
-import { userData } from "../DummyData";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { nameInput,dateInput,photoInput,passwordInput } from "../atoms";
+import { ref, set } from "firebase/database";
+import { database } from "../firebase";
+import { useState } from "react";
 
 
 export default function SignLast({navigation}){
     const [password, setPassword] = useRecoilState(passwordInput);
-    
-    const mergeCurrentUser = async () => {
-        try {
-            await AsyncStorage.setItem('user-data', JSON.stringify(userData))
-            await AsyncStorage.mergeItem('user-data', JSON.stringify(userData))
-        } catch (error) {
-            console.log(error)
+    const [check, setCheck] = useState(false)
+    const [userId, setUserId] = useState(0)
+    const name = useRecoilValue(nameInput);
+    const date = useRecoilValue(dateInput);
+    const photo = useRecoilValue(photoInput);
+      
+    async function writeUserData() {                //userId statesini koymuştum
+             await  set(ref(database, 'dummyData/' + name), {
+                  name: name,
+                  date: date,
+                  password : password,
+                  photo: photo ,
+                  likes: {
+                    likedName: "",
+                    likedDate: "",
+                    likedPhoto: ""
+                  } 
+                });
+              }
+              //unique userId kullanmayı bulamadım o yüzden statede random
+              //value yerleştirdim ve kendi kendini güncellettim
+    const toUsersPage = () => {
+        if(password !== '' && check === true){
+            navigation.navigate('MyTab')
+            writeUserData()  
+            setUserId(prev => prev + 1) 
         }
       }
-   
     
     return(
     <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
@@ -40,7 +59,11 @@ export default function SignLast({navigation}){
                 </View>
                 <View>
                 <View style={styles.section}>
-                <Checkbox style={styles.checkbox}  />
+                <Checkbox 
+                style={styles.checkbox}  
+                value={check} 
+                onValueChange={() => setCheck(!check)}
+                color={check ? "#4630EB" : undefined}/>
                 <Text style={styles.paragraph}>
                     <Text style={styles.paragraphBold}>Kullanım Koşulları, </Text>
                     <Text style={styles.paragraphBold}>Gizlilik Politikası </Text>
@@ -50,10 +73,7 @@ export default function SignLast({navigation}){
                     </Text>
                 </View>
                 <View>
-                   <Pressable style={styles.Button} onPress={() => {
-                    mergeCurrentUser()
-                    navigation.navigate('MyTab')
-                   }}>
+                   <Pressable style={styles.Button} onPress={toUsersPage}>
                     <Text style={styles.ButtonText}>Tamamla</Text>
                 </Pressable>  
                 </View>  

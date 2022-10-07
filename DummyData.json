@@ -1,0 +1,44 @@
+{
+
+    "dummyData" : {
+        "ahmet":{
+        "name": "Ahmet",
+        "date": "01.10.2002",
+        "photo": "require('./assets/dummyImg.png')",
+        "password": "ahmet123"
+    },
+    "mehmet": {
+        "name": "Mehmet",
+        "date": "11.10.2003",
+        "photo": "require('./assets/dummyImg.png')",
+        "password": "mehmet123"
+    },
+    "kemal": {
+        "name": "Kemal",
+        "date": "11.02.1999",
+        "photo": "require('./assets/dummyImg.png')",
+        "password": "kemal123"
+    },
+    "osman": {
+        "name": "Osman",
+        "date": "22.09.2005",
+        "photo": "require('./assets/dummyImg.png')",
+        "password": "osman123"
+    },
+    "kraltr":   {
+        "name": "KralTR",
+        "date": "10.10.2009",
+        "photo": "require('./assets/dummyImg.png')",
+        "password": "kraltr123"
+    }
+}
+}
+
+
+
+
+    
+
+    
+       
+      

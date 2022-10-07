@@ -21,10 +21,14 @@ export default function SignInThird({navigation}){
         });
         if (!result.cancelled) {
           setPhoto(result.uri);
-          setProgress(prev => prev + 0.2)
+          setProgress(0.7)
         }
       };  
-        
+       const toLastPage = () => {
+            if(photo !== null){
+            navigation.navigate('SignLast')
+        }
+        }
 
     return(
         <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}> 
@@ -44,7 +48,7 @@ export default function SignInThird({navigation}){
                      : <Image source={CameraIcon} style={{width: 75, height: 59}}/>}
                 </View>
                 </Pressable>
-                <Pressable style={styles.Button} onPress={()=> navigation.navigate('SignLast')}>
+                <Pressable style={styles.Button} onPress={toLastPage}>
                     <Text style={styles.ButtonText}>Devam Et</Text>
                 </Pressable>
             </View>

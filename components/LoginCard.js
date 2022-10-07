@@ -2,20 +2,27 @@ import { Image, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableWitho
 import CardsImg from '../assets/CardsImg.png'
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { dummyData } from "../DummyData";
+import { ref } from "firebase/database";
+import { database, auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
+ 
 export default function LoginCard({navigation}){
-    const [user, setUser] = useState(dummyData[0])
     const [nameInput, setNameInput] = useState('')
     const [passInput, setpassInput] = useState('')
     const [show, setShow] = useState(false)
-
-    const Login = () => {
-        if(nameInput === user.name && passInput === user.password){
-            navigation.navigate('MyTab')
-        }else if(nameInput !== user.name || passInput !== user.password){
+    
+    
+    
+   const Login = () => {
+    if(nameInput !== '' && passInput !== ''){
+     const email = '@gmail.com'
+     let endEmail = nameInput.concat(email)
+     signInWithEmailAndPassword(auth, endEmail, passInput )   
+     navigation.navigate('MyTab')
+    }else if(nameInput === '' || passInput === ''){
             setShow(true) 
-        }
+        }     
     }  
     return(
     <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}> 

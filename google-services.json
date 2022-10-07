@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "118670405045",
+    "firebase_url": "https://karma-57b57-default-rtdb.firebaseio.com",
+    "project_id": "karma-57b57",
+    "storage_bucket": "karma-57b57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118670405045:android:830c52ac2a2637204cbdfc",
+        "android_client_info": {
+          "package_name": "com.tuna20.karmaonBoard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118670405045-01t7okcph3etatqp48u01s5j3ujo3nef.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwQ9_WPGM34P_Mwp-cybJ0pQtj58jx2sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118670405045-01t7okcph3etatqp48u01s5j3ujo3nef.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

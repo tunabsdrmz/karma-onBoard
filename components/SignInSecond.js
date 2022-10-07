@@ -10,43 +10,43 @@ import { dateInput } from "../atoms";
 
 export default function SignInSecond({navigation}){
    const [date, setDate] = useRecoilState(dateInput);
-    //Bu kısmı atom statesine date objesi koymamı kabul 
-    //etmemesi üzerine bırakmak zorunda kaldım 
+   const [temporaryDate, setTemporaryDate] = useState(new Date(1598051730000))
+   const [show, setShow] = useState(false);
+    const [progress, setProgress] = useState(0.3)
    
-    // const [show, setShow] = useState(false);
-   // const handleOnChange = (e) => {
-   //     const { key, value } = e.target;
-   //     setDate({ ...date, [key]: value });
-    //  };
-   /* const onChange = (event, selectedDate) => {
+   const onChange = (event, selectedDate) => {
         const currentDate = selectedDate
         setShow(false);
-        setDate(currentDate)
-      };*/
-      function onChangeText(ev){
-        setDate(ev)
-      }
+        setTemporaryDate(currentDate)
+        let dt = temporaryDate.toLocaleDateString()
+        setDate(dt)
+        setProgress(0.5)
+      };
+     const toThirdPage = () => {
+        if(date !== 'Seçiniz'){
+            navigation.navigate('SignThird')
+        }
+     }
 
     return(
         <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}> 
         <View style={styles.container}>
             <StatusBar style="dark"/>   
             <View style={{position:'absolute', top: 0}}>
-            <ProgressBar progress={0.5} color='#844AFF' style={styles.progress}/>
+            <ProgressBar progress={progress} color='#844AFF' style={styles.progress}/>
             </View>
             <View style={styles.Card}>
                 <Image source={CardsImg} />
                 <View>
                 <Text style={styles.SubText}>Doğum tarihin nedir?</Text> 
                 </View>
-                <View>     
-                {/*<Pressable style={{minWidth: '90%'}} onPress={() => setShow(true)}> 
-                <Text style={{textAlign:'center', fontFamily:'Gilroy-SemiBold', fontSize: 18 }}>{date.toLocaleDateString()}</Text>
-                {show && <DateTimePicker value={date} onChange={onChange}/> }   
-                </Pressable>*/}
-                <TextInput  value={date} onChangeText={onChangeText} style={styles.Input}  placeholder="3/11/1999" />
+                <View style={styles.Input}>     
+                <Pressable onPress={() => setShow(true)}> 
+                <Text style={{textAlign:'center', fontFamily:'Gilroy-SemiBold', fontSize: 18 }}>{date}</Text>
+                {show && <DateTimePicker value={temporaryDate} onChange={onChange}/> }   
+                </Pressable>
                 </View>  
-                <Pressable style={styles.Button} onPress={()=> navigation.navigate('SignThird')}>
+                <Pressable style={styles.Button} onPress={toThirdPage}>
                     <Text style={styles.ButtonText}>Devam Et</Text>
                 </Pressable>
             </View>
@@ -96,7 +96,10 @@ const styles = StyleSheet.create({
         textAlign:'center', 
         fontFamily:'Gilroy-SemiBold', 
         fontSize: 18,
-        minWidth: '90%'
+        minWidth: '90%',
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center'
     },
     Button:{
         height: 57,

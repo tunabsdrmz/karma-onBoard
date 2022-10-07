@@ -1,38 +1,23 @@
 import { Image, Pressable, StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CardsImg from '../assets/CardsImg.png'
 import { StatusBar } from "expo-status-bar";
 import { ProgressBar, Colors} from "react-native-paper";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { nameInput } from "../atoms";
-import { dummyData, userData } from "../DummyData";
 
 
  
 export default function SignInFirst({navigation}){
    const [name, setName] = useRecoilState(nameInput);
 
-   useEffect(()=>{
-    storeCurrentUser()
-    storeData()
-    },[])
-    
-   const storeData = async () => {
-    try {
-      await AsyncStorage.setItem('dummy-data', JSON.stringify(dummyData))
-    } catch (e) {
-        console.log(e)
-    }
-  }
-  const storeCurrentUser = async () => {
-    try {
-        await AsyncStorage.setItem('user-data', JSON.stringify(userData))
-    } catch (error) {
-        console.log(error)
-    }
-  }
+   
 
+  const toSecondPage = () =>{
+    if(name !== ''){
+        navigation.navigate('SignSecond')
+    }
+  }
    
    
 
@@ -61,7 +46,7 @@ export default function SignInFirst({navigation}){
                      />
                 </View>
 
-                <Pressable style={styles.Button} onPress={()=> navigation.navigate('SignSecond')}>
+                <Pressable style={styles.Button} onPress={toSecondPage}>
                     <Text style={styles.ButtonText}>Devam Et</Text>
                 </Pressable>
             </View>

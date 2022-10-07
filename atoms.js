@@ -6,7 +6,7 @@ export const nameInput = atom({
   });
   export const dateInput = atom({
     key: 'date',
-    default: '',
+    default: 'Seçiniz',
   });
   export const photoInput = atom({
     key: 'photo',
